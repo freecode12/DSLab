@@ -1,94 +1,88 @@
 #include<stdio.h>
 #include<stdlib.h>
-typedefstructelement
+
+typedef struct
 {
-intkey;
+int key;
 }element;
-structqueue
+
+typedef struct node
 {
-elementdata;
-structqueue*link;
-};
-typedefstructqueue*queuepointer;
-queuepointerfront[10],rear[10];
-voidenQueue(elementitem,inti)
+element data;
+struct node *link;
+}*queuepointer;
+
+queuepointer front[5]={NULL},rear[5]={NULL};
+
+element deleteq(int i)
 {
-queuepointertemp;
-temp=(queuepointer)malloc(sizeof(structqueue));
-temp->data=item;
+queuepointer temp=front[i];
+element item;
+if(front[i]==NULL)
+printf("queue empty\n");
+else
+        item=temp->data;
+        front[i]=front[i]->link;
+        return(item);
+}
+
+void addq(element item,int i)
+{
+    queuepointer temp;
+    temp=(queuepointer)malloc(sizeof(*temp));
+    temp->data=item;
+    temp->link=NULL;
 if(front[i])
 rear[i]->link=temp;
 else
 front[i]=temp;
-rear[i]=temp;
-rear[i]->link=NULL;
-}
-elementdeQueue(inti)
-{
-queuepointertemp;
 
-temp=front[i];
-elementitem;
-if(front[i])
-{
-item=front[i]->data;
-front[i]=front[i]->link;
+rear[i]=temp;
 }
-else
+
+void display(int i)
 {
-item.key=-1;
-}
-free(temp);
-returnitem;
-}
-voiddisplay(inti)
-{
-queuepointertemp;
-temp=front[i];
-if(front[i]==NULL)
-{
-printf("Queueisempty\n");
+queuepointer temp=front[i];
+if(!temp)
+    {
+printf("queue empty");
 return;
-}
-printf("queue%dis\n",i+1);
+    }
 for(;temp;temp=temp->link)
-printf("%d\t",temp->data.key);
-printf("\n");
+printf("%d\n",temp->data.key);
+
 }
-intmain()
+int main()
 {
-intchoice,queueno;
-elementitem;
+int index, choice;
+element item;
 while(1)
 {
-printf("Enter\n1.Add\n2.Delete\n3.Display\n4.Exit\n");
+printf("Enter 1. Insert 2. Delete 3. Display 4.Exit\n");
 scanf("%d",&choice);
-if(choice!=4)
-{
-printf("Enterqueuenumberfrom1-10\n");
-scanf("%d",&queueno);
-}
 switch(choice)
 {
-case1:printf("Enterdatatobeinserted:");
+case 1:
+printf("Enter queue index: ");
+scanf("%d",&index);
+printf("Enter element to be inserted : ");
 scanf("%d",&item.key);
-enQueue(item,queueno-1);
+addq(item, index);
 break;
-
-case2:item=deQueue(queueno-1);
-if(item.key==-1)
-printf("Queueempty\n");
-
-else
-printf("Elementdeleted:%d\n",item.key);
+case 2:
+printf("Enter queue index: ");
+scanf("%d",&index);
+item=deleteq(index);
+if(item.key!=-1)
+printf("Element deleted %d", item.key);
 break;
-case3:display(queueno-1);
+case 3:
+printf("Enter queue index: ");
+scanf("%d",&index);
+display(index);
 break;
-
-case4:printf("OperationComplete\n");
-
+case 4:
 exit(0);
-
 }
 }
 }
