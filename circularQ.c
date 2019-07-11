@@ -1,117 +1,106 @@
 #include<stdio.h>
 #include<stdlib.h>
-typedefstruct
+#define MALLOC(x,size,type)(x=(type*)malloc(size*sizeof(type)))
+typedef struct
 {
-intkey;
+    int n;
 }element;
-element*queue=NULL;
-intrear=0,front=0,size=2;
-voidcreate()
+int front=0, rear=0, capacity;
+element *queue;
+void copy(element* start, element* end, element* newQueue)
 {
-queue=(element*)malloc(size*sizeof(element));
+    element* j;
+    element* i;
+    i=newQueue;
+    j=start;
+    for(; j<end; j++, i++)
+  {
+        *i=*j;
+    }
 }
-voidcopy(element*start,element*end,element*nq)
+void queueFull()
 {
-while(start!=end)
-{
-*nq=*start;
-nq++;
-start++;
+    element* newQueue;
+    MALLOC(newQueue, capacity*2, element);
+    int start=(front+1)%capacity;
+    if(start < 2) //either 1 or 0,  1 when front at 0, 0 when front at capacity - 1
+        copy(queue+start, queue+start+capacity-1, newQueue);
+    else
+    {
+        copy(queue+start, queue+capacity , newQueue);
+        copy(queue, queue+rear+1, newQueue+capacity-start);
+    }
+    front=2*capacity-1;
+    rear=capacity-2;
+    capacity*=2;
+    free(queue);
+    queue=newQueue;
 }
+void addq(element item)
+{
+	int temp=rear;    
+	rear=(rear+1)%capacity;
+    if(front==rear)
+	{
+	rear=temp;
+        queueFull();
+	rear=(rear+1)%capacity;
+	}
+    queue[rear]=item;
 }
-voidqueueFull()
+element deleteq()
 {
-element*nq;
-nq=(element*)malloc(2*size*sizeof(queue));
-intstart=(front+1)%size;
-if(start<2)
-copy(queue+start,queue+start+size-1,nq);
-else
-{
-copy(queue+start,queue+size,nq);
-copy(queue,queue+rear+1,nq+size-start);
+    element item;
+    if(front==rear)
+    {
+        item.n=-1;
+        return item;
+    }
+    front=(front+1)%capacity;
+    return queue[front];
 }
-front=2*size-1;
-rear=size-2;
-size*=2;
-free(queue);
-queue=nq;
+void displayq()
+{
+    int i;
+    if(front==rear)
+    {
+        printf("Queue Empty\n");
+        return;
+    }
+    for(i=(front+1)%capacity; i!=rear; i=(i+1)%capacity)
+        printf("%d\t",queue[i].n);
+    printf("%d", queue[i].n);
+    printf("\n");
+    printf("Front: %d Rear: %d\n", front, rear);
 }
-voidenQueue(elementitem)
+int main()
 {
-rear=(rear+1)%size;
-if(front==rear)
-{
-queueFull();
-rear=(rear+1)%size;
-}
-queue[rear]=item;
-
-}
-elementdeQueue()
-{
-elementitem;
-if(front==rear)
-{
-item.key=-1;
-returnitem;
-}
-front=(front+1)%size;
-returnqueue[front];
-}
-voiddisplayQueue()
-{
-inti=front+1;
-if(front==rear)
-printf("\nTheQueueisempty\n");
-else
-{
-printf("\n");
-for(i=(front+1)%size;i!=(rear);i=(i+1)%size)
-{
-printf("%d",queue[i].key);
-}
-printf("%d",queue[i].key);
-printf("\nfront=%d\trear=%d\n",front,rear);
-}
-}
-intmain()
-{
-intchoice;
-intn;
-elementitem;
-create();
-do
-{
-printf("enterchoice\n");
-printf("MENU\n");
-printf("1.Insert\n2.Delete\n3.Display\n4.Exit\n");
-scanf("%d",&choice);
-switch(choice)
-{
-case1:printf("enterelement\n");
-scanf("%d",&n);
-item.key=n;
-enQueue(item);
-break;
-case2:item=deQueue();
-if(item.key==-1)
-printf("queueisempty\n");
-
-else
-printf("elementdeletedis%d\n",item.key);
-break;
-case3:displayQueue();
-break;
-
-case4:printf("operationcomplete\n");
-
-break;
-
-default:printf("invalidchoice\n");
-
-break;
-
-}
-}while(choice!=4);
+    int choice;
+    element item;
+    printf("Enter intial size");
+    scanf("%d",&capacity);
+    MALLOC(queue, capacity, element);
+    while(1)
+    {
+        printf("1. Add\n 2. Delete\n 3. Display\n");
+        scanf("%d",&choice);
+        switch(choice)
+        {
+        case 1:
+            printf("Enter item to add");
+            scanf("%d",&item.n);
+            addq(item);
+            break;
+        case 2:
+            item=deleteq();
+            if(item.n==-1)
+                printf("Queue Empty");
+            else
+                printf("Item deleted: %d", item.n);
+            break;
+        case 3:
+            displayq();
+            break;
+        }
+    }
 }
